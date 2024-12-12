@@ -1,0 +1,20 @@
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+
+namespace Delivery.Models;
+
+public class DeliveryContext : IdentityDbContext<User, IdentityRole<int>, int>
+{
+    public DbSet<User> Users { get; set; }
+    public DbSet<Establishment> Establishments { get; set; }
+    public DbSet<Dish> Dishes { get; set; }
+    public DbSet<Basket> Baskets { get; set; }
+    
+    public DeliveryContext(DbContextOptions<DeliveryContext> options) : base(options) {}
+    
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+    }
+}
