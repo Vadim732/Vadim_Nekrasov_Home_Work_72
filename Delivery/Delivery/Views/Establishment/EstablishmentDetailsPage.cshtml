@@ -16,11 +16,12 @@
     @if (User .IsInRole("admin"))
     {
         <div class="text-center mt-4 mb-3" style="display: flex; justify-content: center; gap: 10px;">
+            <a asp-action="CreateDish" asp-route-establishmentId="@Model.Id" class="btn btn-outline-success mr-1">Добавить блюдо</a>
             <form asp-action="EditEstablishment" asp-controller="Establishment" method="get" asp-route-id="@Model.Id">
                 <button type="submit" class="btn btn-dark ">Редактировать заведение</button>
             </form>
             <form asp-action="DeleteEstablishment" asp-controller="Establishment" method="post">
-                <input type="hidden" name="id" value="@Model.Id" />
+                <input type="hidden" name="id" value="@Model.Id"/>
                 <button type="submit" class="btn btn-danger">Удалить заведение</button>
             </form>
         </div>

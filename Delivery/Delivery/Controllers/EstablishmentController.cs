@@ -162,4 +162,36 @@ public class EstablishmentController : Controller
         return RedirectToAction("Index");
     }
     
+    [Authorize(Roles = "admin")]
+    [HttpGet]
+    public IActionResult CreateDish(int establishmentId)
+    {
+        ViewBag.EstablishmentId = establishmentId;
+        return View();
+    }
+
+    [Authorize(Roles = "admin")]
+    [HttpPost]
+    public async Task<IActionResult> CreateDish(int establishmentId, Dish model)
+    {
+        if (ModelState.IsValid)
+        {
+            Dish dish = new Dish
+            {
+                Name = model.Name,
+                Description = model.Description,
+                Image = model.Image,
+                Price = model.Price,
+                EstablishmentId = establishmentId
+            };
+
+            _context.Dishes.Add(dish);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("EstablishmentDetailsPage", new { id = establishmentId });
+        }
+
+        ViewBag.EstablishmentId = establishmentId;
+        return View(model);
+    }
+
 }

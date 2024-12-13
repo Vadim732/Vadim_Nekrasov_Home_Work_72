@@ -1,0 +1,43 @@
+﻿@model Dish
+
+@{
+    ViewBag.Title = "Создание блюдо";
+}
+
+<div class="bg-dark text-center pt-5 pb-4 border-radius-1">
+    <h3 class="text-white mb-5"><i class="fa-solid fa-utensils text-error"></i> Заполните форму для добавления нового блюда</h3>
+    <form asp-action="CreateDish" asp-controller="Establishment" asp-anti-forgery="true">
+        <input type="hidden" name="establishmentId" value="@ViewBag.EstablishmentId" />
+        <div asp-validation-summary="ModelOnly" class="text-error"></div>
+        <div class="form_row mb-3">
+            <label for="" class="col-4">
+                <input type="text" class="form-control" asp-for="Name" placeholder="Укажите название блюда...">
+                <span asp-validation-for="Name" class="text-error"/>
+            </label>
+        </div>
+        <div class="form_row mb-3">
+            <label for="" class="col-4">
+                <textarea type="text" class="form-control" asp-for="Description" rows="3" placeholder="Укажите описание блюда..."></textarea>
+                <span asp-validation-for="Description" class="text-error"/>
+            </label>
+        </div>
+        <div class="form_row mb-3">
+            <label for="" class="col-4">
+                <input type="text" class="form-control" asp-for="Image" placeholder="Введите ссылку на изображение...">
+                <span asp-validation-for="Image" class="text-error"/>
+            </label>
+        </div>
+        <div class="form_row mb-3">
+            <label for="" class="col-4">
+                <input type="number" class="form-control" asp-for="Price" placeholder="Укажите цену...">
+                <span asp-validation-for="Price" class="text-error"/>
+            </label>
+        </div>
+        <button type="submit" class="btn btn-outline-light mb-3 w-25">Добавить</button>
+    </form>
+</div>
+
+@section Scripts
+{
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
