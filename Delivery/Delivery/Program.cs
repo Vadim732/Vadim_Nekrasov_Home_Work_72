@@ -48,11 +48,12 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-    name: "profile",
-    pattern: "{controller=Account}/{action=Profile}/{userId:int}");
-
-app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Establishment}/{action=Index}/{id?}");
+
+
+app.MapControllerRoute(
+    name: "profile",
+    pattern: "{controller=Account}/{action=Profile}/{userId:int}");
 
 app.Run();
