@@ -228,4 +228,22 @@ public class EstablishmentController : Controller
 
         return View(model);
     }
+
+    [Authorize(Roles = "admin")]
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteDish(int dishId)
+    {
+        Dish? dish = await _context.Dishes.FindAsync(dishId);
+        if (dish != null)
+        {
+            int? establishmentId = dish.EstablishmentId;
+            _context.Dishes.Remove(dish);
+            await _context.SaveChangesAsync();
+        
+            return RedirectToAction("EstablishmentDetailsPage", new { id = establishmentId });
+        }
+        
+        return NotFound();
+    }
 }
