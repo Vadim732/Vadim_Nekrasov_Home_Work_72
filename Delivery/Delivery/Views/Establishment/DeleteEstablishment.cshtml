@@ -1,0 +1,20 @@
+@model Delivery.Models.Establishment
+
+@{
+    ViewData["Title"] = "Удаление заведения";
+}
+
+<h2 class="mb-2 fw-bolder text-center">Удалить заведение</h2>
+
+<div class="container" style="max-width: 800px; margin: auto; padding: 10px;">
+    <h4 class="text-center">Вы уверены, что хотите удалить заведение <strong>@Model.Name</strong>?</h4>
+    <div class="text-center">
+        <form method="post" asp-action="DeleteConfirmed" asp-controller="Establishment" asp-anti-forgery="true">
+            <input type="hidden" name="id" value="@Model.Id" />
+            <div class="text-center">
+                <input type="submit" value="Удалить" class="btn btn-danger" style="border-radius: 10px; padding: 10px 15px;"/>
+                <a href="@Url.Action("Index", "Establishment")" class="btn btn-secondary" style="border-radius: 10px; padding: 10px 15px;">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>

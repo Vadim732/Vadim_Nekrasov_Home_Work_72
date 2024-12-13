@@ -8,34 +8,47 @@
     <div class="text-center mb-4">
         <img src="@Model.Image" alt="Фото заведения" class="img-fluid cafe-image">
         <div class="description-box text-center">
-            <h4 class="mb-3">@Model.Name</h4>
-            <p class="mt-2">@Model.Description</p>
+            <h4 class="mb-3" style="word-wrap: break-word;">@Model.Name</h4>
+            <p class="mt-2" style="word-wrap: break-word;">@Model.Description</p>
         </div>
     </div>
-    
-    <h3 class="mb-3 text-center">Меню</h3>
-    
-    @if (Model.Dishes != null && Model.Dishes.Count > 0)
+
+    @if (User .IsInRole("admin"))
     {
-        <div class="row">
-            @foreach (var dish in Model.Dishes)
-            {
-                <div class="col-sm-3 mb-3 d-flex"> 
-                    <div class="card1 shadow position-relative">
-                        <img src="@dish.Image" alt="Фото блюда" style="height: 150px;"> 
-                        <div class="card-body text-start">
-                            <p class="card-text ">@dish.Name</p>
-                            <p class="card-text ">Описание:  <em class="not-bold">@dish.Description</em></p>
-                            <p class="card-text ">@dish.Price сом</p>
-                            <button class="btn btn-success btn-sm position-absolute bottom-0 end-0 m-2">Добавить в корзину</button>
-                        </div>
-                    </div>
-                </div>
-            }
+        <div class="text-center mt-4 mb-3" style="display: flex; justify-content: center; gap: 10px;">
+            <form asp-action="EditEstablishment" asp-controller="Establishment" method="get" asp-route-id="@Model.Id">
+                <button type="submit" class="btn btn-dark ">Редактировать заведение</button>
+            </form>
+            <form asp-action="DeleteEstablishment" asp-controller="Establishment" method="post">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn btn-danger">Удалить заведение</button>
+            </form>
         </div>
     }
-    else
-    {
-        <h4 class="text-center">Меню временно недоступно</h4>
-    }
+    
+        <h3 class="mb-3 text-center">Меню</h3>
+    
+        @if (Model.Dishes != null && Model.Dishes.Count > 0)
+        {
+            <div class="row">
+                @foreach (var dish in Model.Dishes)
+                {
+                    <div class="col-sm-3 mb-3 d-flex"> 
+                        <div class="card1 shadow position-relative">
+                            <img src="@dish.Image" alt="Фото блюда" style="height: 150px;"> 
+                            <div class="card-body text-start">
+                                <p class="card-text ">@dish.Name</p>
+                                <p class="card-text ">Описание:  <em class="not-bold">@dish.Description</em></p>
+                                <p class="card-text ">@dish.Price сом</p>
+                                <button class="btn btn-success btn-sm position-absolute bottom-0 end-0 m-2">Добавить в корзину</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <h4 class="text-center">Меню временно недоступно</h4>
+        }
 </div>

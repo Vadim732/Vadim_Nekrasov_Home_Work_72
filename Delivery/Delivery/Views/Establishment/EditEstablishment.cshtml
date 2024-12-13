@@ -1,0 +1,43 @@
+@model Delivery.ViewModels.EstablishmentViewModel
+
+@{
+    ViewData["Title"] = "Редактирование заведения";
+}
+
+<h2 class="mb-2 fw-bolder text-center">Редактировать заведение</h2>
+
+<div class="container" style="max-width: 800px; margin: auto; padding: 10px;">
+    <form method="post" asp-action="EditEstablishment" asp-controller="Establishment" asp-anti-forgery="true">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-card">
+            <div class="form-card-item mb-4">
+                <label class="pb-2" asp-for="Name">Название заведения</label>
+                <input class="form-input form-control" type="text" asp-for="Name" placeholder="Введите название заведения"/>
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+
+            <div class="form-card-item mb-4">
+                <label class="pb-2" asp-for="Image">URL изображения</label>
+                <input class="form-input form-control" type="url" asp-for="Image" placeholder="Введите URL изображения"/>
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+
+            <div class="form-card-item mb-4">
+                <label class="pb-2" asp-for="Description">Описание заведения</label>
+                <textarea class="form-input form-control" asp-for="Description" rows="6" placeholder="Введите описание заведения"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="text-center">
+                <input type="submit" value="Сохранить изменения" class="btn btn-success" style="border-radius: 10px; padding: 10px 15px;"/>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts
+{
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
