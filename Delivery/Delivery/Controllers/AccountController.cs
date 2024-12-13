@@ -282,6 +282,32 @@ public class AccountController : Controller
     }
     
     [Authorize(Roles = "admin")]
+    public async Task<IActionResult> DeleteUser(int userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null)
+        {
+            return NotFound($"Пользователь с ID {userId} не найден.");
+        }
+        var roles = await _userManager.GetRolesAsync(user);
+        if (roles.Contains("admin"))
+        {
+            ViewBag.ErrorMessage = "Нельзя удалить администратора!";
+            return RedirectToAction("Index", "Account");
+        }
+        var result = await _userManager.DeleteAsync(user);
+        if (result.Succeeded)
+        {
+            return RedirectToAction("Index", "Account");
+        }
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+        return RedirectToAction("Index", "Account");
+    }
+    
+    [Authorize(Roles = "admin")]
     public async Task<IActionResult> GrantAdminRole(int userId)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
