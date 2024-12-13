@@ -282,7 +282,7 @@ public class AccountController : Controller
     }
     
     [Authorize(Roles = "admin")]
-    public async Task<IActionResult> BlockUser(int userId)
+    public async Task<IActionResult> GrantAdminRole(int userId)
     {
         var user = await _userManager.FindByIdAsync(userId.ToString());
         if (user == null)
@@ -294,90 +294,16 @@ public class AccountController : Controller
         {
             return RedirectToAction("Index", "Account");
         }
-        user.LockoutEnd = DateTimeOffset.MaxValue;
-        var result = await _userManager.UpdateAsync(user);
+        var result = await _userManager.AddToRoleAsync(user, "admin");
         if (result.Succeeded)
         {
             return RedirectToAction("Index", "Account");
         }
-        return RedirectToAction("Index", "Account");
-    }
-
-    [Authorize(Roles = "admin")]
-    public async Task<IActionResult> UnblockUser(int userId)
-    {
-        var user = await _userManager.FindByIdAsync(userId.ToString());
-        if (user == null)
+        foreach (var error in result.Errors)
         {
-            return NotFound($"Пользователь с ID {userId} не найден.");
-        }
-        var roles = await _userManager.GetRolesAsync(user);
-        if (roles.Contains("admin"))
-        {
-            return RedirectToAction("Index", "Account");
-        }
-
-        if (user.LockoutEnd == null || user.LockoutEnd <= DateTimeOffset.Now)
-        {
-            return RedirectToAction("Index", "Account");
-        }
-        user.LockoutEnd = null;
-        var result = await _userManager.UpdateAsync(user);
-        if (result.Succeeded)
-        {
-            return RedirectToAction("Index", "Account");
+            ModelState.AddModelError(string.Empty, error.Description);
         }
         return RedirectToAction("Index", "Account");
-    }
-    
-    [Authorize(Roles = "admin")]
-    [HttpGet]
-    public async Task<IActionResult> UserEdit(int userId)
-    {
-        var user = await _userManager.FindByIdAsync(userId.ToString());
-        var model = new UserEditViewModel
-        {
-            UserName = user.UserName,
-            Email = user.Email,
-            Avatar = user.Avatar
-        };
-
-        return View(model);
-    }
-    
-    [Authorize(Roles = "admin")]
-    [HttpPost]
-    public async Task<IActionResult> UserEdit(int userId, UserEditViewModel uevm)
-    {
-        if (ModelState.IsValid)
-        {
-            var user = await _userManager.FindByIdAsync(userId.ToString());
-            
-            var existingEmailUser = await _userManager.FindByEmailAsync(uevm.Email);
-            if (existingEmailUser != null && existingEmailUser.Id != user.Id)
-            {
-                ViewBag.ErrorMessage = "Этот адрес электронной почты уже используется другим пользователем!";
-                return View(uevm);
-            }
-
-            var existingUserNameUser = await _userManager.FindByNameAsync(uevm.UserName);
-            if (existingUserNameUser != null && existingUserNameUser.Id != user.Id)
-            {
-                ViewBag.ErrorMessage = "Этот логин уже используется другим пользователем!";
-                return View(uevm);
-            }
-
-            user.UserName = uevm.UserName;
-            user.Email = uevm.Email;
-            user.Avatar = uevm.Avatar;
-            var result = await _userManager.UpdateAsync(user);
-            if (result.Succeeded)
-            {
-                return RedirectToAction("Index", "Account");
-            }
-        }
-
-        return View(uevm);
     }
     
     public async Task<IActionResult> Logout()
