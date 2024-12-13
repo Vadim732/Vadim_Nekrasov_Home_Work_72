@@ -1,1 +1,33 @@
-﻿<h2>title</h2>
+﻿@model List<Establishment>
+
+@{
+    ViewBag.Title = "Список всех заведений";
+}
+
+<h2 class="mb-3 text-center">Все заведения</h2>
+
+@if (Model != null && Model.Count > 0)
+{
+    <div class="container">
+        <div class="row">
+            @foreach (Establishment establishment in Model)
+            {
+                <div class="col-sm-4 mb-3 ">
+                    <a asp-controller="Establishment" asp-action="EstablishmentDetailsPage" asp-route-id="@establishment.Id" style="text-decoration: none;">
+                        <div class="card1 shadow">
+                            <img src="@establishment.Image" alt="Фото заведения"> 
+                            <div class="card-body">
+                                <p class="card-text">@establishment.Name</p>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+    
+}
+else
+{
+    <h2>Список заведений пуст</h2>
+}

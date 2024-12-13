@@ -72,3 +72,65 @@ body {
 .truck-color {
   color: #f55262;
 }
+
+.card1 {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;
+  justify-content: space-between;;
+  width: 100%;
+  min-height: 200px;
+  background-color: #f8f9fa;
+  border: 1px solid #d3d3d3;
+  border-radius: 20px;  
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-sizing: border-box;
+}
+
+.card1:hover {
+  transform: scale(1.03); 
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); 
+}
+
+.card1 img {
+  width: 95%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 20px;
+  padding: 3px; 
+  margin-top: 10px;
+}
+
+.card1 .card-body {
+  text-align: center;
+  justify-content: space-between; 
+  flex-grow: 1;  
+}
+
+.card1 .card-text {
+  color: #000;
+  font-weight: bold;
+}
+.not-bold {
+  font-weight: normal;
+}
+.description-box {
+  background-color: #f8f9fa; 
+  border-radius: 10px; 
+  padding: 20px; 
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); 
+  margin: 20px 0;
+}
+
+.cafe-image {
+  border-radius: 20px;
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); 
+  transition: box-shadow 0.3s ease; 
+}
+
+.cafe-image:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
