@@ -1,13 +1,13 @@
 ﻿@model Dish
 
 @{
-    ViewBag.Title = "Создание блюда";
+    ViewBag.Title = "Редактирование блюда";
 }
 
 <div class="bg-dark text-center pt-5 pb-4 border-radius-1">
-    <h3 class="text-white mb-5"><i class="fa-solid fa-utensils text-success"></i> Заполните форму для добавления нового блюда</h3>
-    <form asp-action="CreateDish" asp-controller="Establishment" asp-anti-forgery="true">
-        <input type="hidden" name="establishmentId" value="@ViewBag.EstablishmentId" />
+    <h3 class="text-white mb-5"><i class="fa-solid fa-pen-to-square text-error"></i> Заполните форму для редактирования блюда</h3>
+    <form asp-action="EditDish" asp-controller="Establishment" asp-anti-forgery="true">
+        <input type="hidden" name="dishId" value="@Model.Id" />
         <div asp-validation-summary="ModelOnly" class="text-error"></div>
         <div class="form_row mb-3">
             <label for="" class="col-4">
@@ -33,7 +33,7 @@
                 <span asp-validation-for="Price" class="text-error"/>
             </label>
         </div>
-        <button type="submit" class="btn btn-outline-light mb-3 w-25">Добавить</button>
+        <button type="submit" class="btn btn-outline-light mb-3 w-25">Сохранить</button>
     </form>
 </div>
 

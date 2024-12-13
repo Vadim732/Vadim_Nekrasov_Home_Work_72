@@ -42,6 +42,10 @@
                                 <p class="card-text ">Описание:  <em class="not-bold">@dish.Description</em></p>
                                 <p class="card-text ">@dish.Price сом</p>
                                 <button class="btn btn-success btn-sm position-absolute bottom-0 end-0 m-2">Добавить в корзину</button>
+                                @if (User.IsInRole("admin"))
+                                {
+                                    <a asp-action="EditDish" asp-route-dishId="@dish.Id" class="btn btn-secondary mr-1"><i class="fa-solid fa-pen-to-square"></i></a>
+                                }
                             </div>
                         </div>
                     </div>

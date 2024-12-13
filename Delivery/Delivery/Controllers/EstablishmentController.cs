@@ -13,13 +13,14 @@ public class EstablishmentController : Controller
     private readonly SignInManager<User> _signInManager;
     private readonly DeliveryContext _context;
 
-    public EstablishmentController(UserManager<User> userManager, SignInManager<User> signInManager, DeliveryContext context)
+    public EstablishmentController(UserManager<User> userManager, SignInManager<User> signInManager,
+        DeliveryContext context)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _context = context;
     }
-    
+
     public async Task<IActionResult> Index()
     {
         List<Establishment> establishments = await _context.Establishments.ToListAsync();
@@ -32,16 +33,18 @@ public class EstablishmentController : Controller
         {
             return NotFound();
         }
-        
-        Establishment? establishment = await _context.Establishments.Include(e => e.Dishes).FirstOrDefaultAsync(e => e.Id == id);
-        
+
+        Establishment? establishment =
+            await _context.Establishments.Include(e => e.Dishes).FirstOrDefaultAsync(e => e.Id == id);
+
         if (establishment == null)
         {
             return NotFound();
         }
+
         return View(establishment);
     }
-    
+
     [Authorize(Roles = "admin")]
     public IActionResult CreateEstablishment()
     {
@@ -56,7 +59,7 @@ public class EstablishmentController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null || !await _userManager.IsInRoleAsync(user, "admin"))
         {
-            return Forbid(); 
+            return Forbid();
         }
 
         if (ModelState.IsValid)
@@ -66,16 +69,17 @@ public class EstablishmentController : Controller
                 Name = model.Name,
                 Image = model.Image,
                 Description = model.Description,
-                UserId = user.Id, 
+                UserId = user.Id,
             };
 
             _context.Establishments.Add(establishment);
             await _context.SaveChangesAsync();
-            return RedirectToAction("Index"); 
+            return RedirectToAction("Index");
         }
-        return View(model); 
+
+        return View(model);
     }
-    
+
     [Authorize(Roles = "admin")]
     [HttpGet]
     public async Task<IActionResult> EditEstablishment(int? id)
@@ -85,7 +89,8 @@ public class EstablishmentController : Controller
             return NotFound();
         }
 
-        Establishment? establishment = await _context.Establishments.FirstOrDefaultAsync(e => e.Id == id);;
+        Establishment? establishment = await _context.Establishments.FirstOrDefaultAsync(e => e.Id == id);
+        ;
         if (establishment == null)
         {
             return NotFound();
@@ -109,7 +114,7 @@ public class EstablishmentController : Controller
         if (ModelState.IsValid)
         {
             Establishment? existingEstablishment = await _context.Establishments
-                .Where(e => e.Name == model.Name && e.Id != id) 
+                .Where(e => e.Name == model.Name && e.Id != id)
                 .FirstOrDefaultAsync();
 
             if (existingEstablishment != null)
@@ -117,7 +122,7 @@ public class EstablishmentController : Controller
                 ModelState.AddModelError("Name", "Заведение с таким названием уже существует, выберите другое.");
                 return View(model);
             }
-            
+
             Establishment? establishment = await _context.Establishments.FindAsync(id);
             if (establishment != null)
             {
@@ -128,10 +133,11 @@ public class EstablishmentController : Controller
                 return RedirectToAction("Index");
             }
         }
+
         return View(model);
     }
-    
-    
+
+
     [Authorize(Roles = "admin")]
     public async Task<IActionResult> DeleteEstablishment(int? id)
     {
@@ -159,9 +165,10 @@ public class EstablishmentController : Controller
             _context.Establishments.Remove(establishment);
             await _context.SaveChangesAsync();
         }
+
         return RedirectToAction("Index");
     }
-    
+
     [Authorize(Roles = "admin")]
     [HttpGet]
     public IActionResult CreateDish(int establishmentId)
@@ -194,4 +201,31 @@ public class EstablishmentController : Controller
         return View(model);
     }
 
+    [Authorize(Roles = "admin")]
+    [HttpGet]
+    public async Task<IActionResult> EditDish(int dishId)
+    {
+        Dish dish = await _context.Dishes.FindAsync(dishId);
+
+        return View(dish);
+    }
+
+    [Authorize(Roles = "admin")]
+    [HttpPost]
+    public async Task<IActionResult> EditDish(int dishId, Dish model)
+    {
+        if (ModelState.IsValid)
+        {
+            Dish dish = await _context.Dishes.FindAsync(dishId);
+            dish.Name = model.Name;
+            dish.Description = model.Description;
+            dish.Image = model.Image;
+            dish.Price = model.Price;
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("EstablishmentDetailsPage", new { id = dish.EstablishmentId });
+        }
+
+        return View(model);
+    }
 }
