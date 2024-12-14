@@ -3,6 +3,7 @@ using Delivery.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SignInResult = Microsoft.AspNetCore.Identity.SignInResult;
 
 namespace Delivery.Controllers;
@@ -141,8 +142,9 @@ public class AccountController : Controller
     {
         User user = await _userManager.GetUserAsync(User);
         var roles = await _userManager.GetRolesAsync(user);
-        if (roles.Contains("admin"))
+        if (user.Id == 1) 
         {
+            ViewBag.ErrorMessage = "Ошибка: Пользователь с ID 1 не может быть отредактирован!";
             return RedirectToAction("Profile", "Account");
         }
         var model = new EditViewModel
@@ -164,8 +166,9 @@ public class AccountController : Controller
         {
             User user = await _userManager.GetUserAsync(User);
             var roles = await _userManager.GetRolesAsync(user);
-            if (roles.Contains("admin"))
+            if (user.Id == 1)
             {
+                ViewBag.ErrorMessage = "Ошибка: Пользователь с ID 1 не может быть отредактирован!";
                 return RedirectToAction("Profile", "Account");
             }
             if (user != null)
@@ -331,6 +334,47 @@ public class AccountController : Controller
         }
         return RedirectToAction("Index", "Account");
     }
+    
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> RevokeAdminRole(int userId)
+    {
+        var user = await _userManager.FindByIdAsync(userId.ToString());
+        if (user == null)
+        {
+            return NotFound($"Пользователь с ID {userId} не найден.");
+        }
+        var currentUser = await _userManager.GetUserAsync(User);
+        if (currentUser.Id == userId)
+        {
+            return BadRequest("Ошибка: Администратор не может удалить свою роль.");
+        }
+        if (userId == 1)
+        {
+            return BadRequest("Ошибка: Пользователь с ID 1 не может быть лишён роли администратора.");
+        }
+    
+        var roles = await _userManager.GetRolesAsync(user);
+        if (!roles.Contains("admin"))
+        {
+            return RedirectToAction("Index", "Account");
+        }
+    
+        var resultRemoveAdmin = await _userManager.RemoveFromRoleAsync(user, "admin");
+        var resultAddUser = await _userManager.AddToRoleAsync(user, "user");
+    
+        if (resultRemoveAdmin.Succeeded && resultAddUser.Succeeded)
+        {
+            return RedirectToAction("Index", "Account");
+        }
+    
+        foreach (var error in resultRemoveAdmin.Errors.Concat(resultAddUser.Errors))
+        {
+            ModelState.AddModelError(string.Empty, error.Description);
+        }
+    
+        return RedirectToAction("Index", "Account");
+    }
+
     
     public async Task<IActionResult> Logout()
     {

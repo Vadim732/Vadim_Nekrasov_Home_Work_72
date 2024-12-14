@@ -20,9 +20,12 @@
             </button>
             <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                 <ul class="navbar-nav flex-grow-1">
-                    <li class="nav-item ml-2">
-                        <a class="btn btn-outline-light" asp-controller="Establishment" asp-action="CreateEstablishment"><i class="fa-solid fa-plus"></i>Создать заведение</a> 
-                    </li>
+                    @if (User.IsInRole("admin"))
+                    {
+                        <li class="nav-item ml-2">
+                            <a class="btn btn-outline-light" asp-controller="Establishment" asp-action="CreateEstablishment"><i class="fa-solid fa-plus"></i>Создать заведение</a>
+                        </li>
+                    }
                 </ul>
                 <ul class="navbar-nav d-flex">
                     @if (User.Identity.IsAuthenticated)
