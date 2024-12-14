@@ -9,6 +9,6 @@ public class Basket
     
     public int EstablishmentId { get; set; }
     public Establishment Establishment { get; set; }
-    
-    public ICollection<Dish> Dishes { get; set; } = new List<Dish>();
+    public ICollection<BasketDish> BasketDishes { get; set; } = new List<BasketDish>();
+    public double TotalPrice => BasketDishes.Sum(bd => bd.Dish.Price * bd.Quantity);
 }

@@ -33,16 +33,33 @@ public class EstablishmentController : Controller
         {
             return NotFound();
         }
-
-        Establishment? establishment =
-            await _context.Establishments.Include(e => e.Dishes).FirstOrDefaultAsync(e => e.Id == id);
+        var establishment = await _context.Establishments
+            .Include(e => e.Dishes)
+            .FirstOrDefaultAsync(e => e.Id == id);
 
         if (establishment == null)
         {
             return NotFound();
         }
+        var user = await _userManager.GetUserAsync(User); 
+        Basket basket = null;
+        if (user != null)
+        {
+            basket = await _context.Baskets
+                .Include(b => b.BasketDishes)
+                .FirstOrDefaultAsync(b => b.UserId == user.Id && b.EstablishmentId == id);
+        }
+        var model = new EstablishmentDeteilsViewModel()
+        {
+            Id = establishment.Id,
+            Name = establishment.Name,
+            Description = establishment.Description,
+            Image = establishment.Image,
+            Dishes = new List<Dish>(_context.Dishes.Where(d => d.EstablishmentId == establishment.Id)),
+            Basket = basket
+        };
 
-        return View(establishment);
+        return View(model);
     }
 
     [Authorize(Roles = "admin")]
@@ -246,4 +263,96 @@ public class EstablishmentController : Controller
         
         return NotFound();
     }
+    
+    [HttpPost]
+    public async Task<IActionResult> AddToBasket(int dishId, int establishmentId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var basket = await _context.Baskets
+            .Include(b => b.BasketDishes).ThenInclude(basketDish => basketDish.Dish)
+            .FirstOrDefaultAsync(b => b.UserId == user.Id && b.EstablishmentId == establishmentId);
+
+        if (basket == null)
+        {
+            basket = new Basket
+            {
+                UserId = user.Id,
+                EstablishmentId = establishmentId
+            };
+            _context.Baskets.Add(basket);
+            await _context.SaveChangesAsync();
+        }
+
+        var dishInBasket = basket.BasketDishes.FirstOrDefault(bd => bd.DishId == dishId);
+        if (dishInBasket != null)
+        {
+            dishInBasket.Quantity++;
+        }
+        else
+        {
+            basket.BasketDishes.Add(new BasketDish
+            {
+                DishId = dishId,
+                Quantity = 1
+            });
+        }
+        await _context.SaveChangesAsync();
+        var basketResponse = new
+        {
+            BasketDishes = basket.BasketDishes.Select(bd => new
+            {
+                DishName = bd.Dish.Name,
+                Quantity = bd.Quantity,
+                Price = bd.Dish.Price,
+                TotalPrice = bd.Quantity * bd.Dish.Price,
+                DishId = bd.DishId
+            }).ToList(),
+            TotalPrice = basket.BasketDishes.Sum(bd => bd.Quantity * bd.Dish.Price)
+        };
+
+        return Json(basketResponse);
+    }
+    [HttpPost]
+    public async Task<IActionResult> RemoveFromBasket(int dishId, int establishmentId)
+    {
+        var user = await _userManager.GetUserAsync(User);
+        if (user == null)
+        {
+            return Unauthorized();
+        }
+
+        var basket = await _context.Baskets
+            .Include(b => b.BasketDishes).ThenInclude(basketDish => basketDish.Dish)
+            .FirstOrDefaultAsync(b => b.UserId == user.Id && b.EstablishmentId == establishmentId);
+
+        if (basket != null)
+        {
+            var dishInBasket = basket.BasketDishes.FirstOrDefault(bd => bd.DishId == dishId);
+            if (dishInBasket != null)
+            {
+                basket.BasketDishes.Remove(dishInBasket);
+                await _context.SaveChangesAsync();
+            }
+        }
+        var basketResponse = new
+        {
+            BasketDishes = basket.BasketDishes.Select(bd => new
+            {
+                DishName = bd.Dish.Name,
+                Quantity = bd.Quantity,
+                Price = bd.Dish.Price,
+                TotalPrice = bd.Quantity * bd.Dish.Price,
+                DishId = bd.DishId
+            }).ToList(),
+            TotalPrice = basket.BasketDishes.Sum(bd => bd.Quantity * bd.Dish.Price)
+        };
+
+        return Json(basketResponse);
+    }
+
 }
