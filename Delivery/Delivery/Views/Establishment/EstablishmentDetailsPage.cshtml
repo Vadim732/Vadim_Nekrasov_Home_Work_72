@@ -39,17 +39,20 @@
                     <div class="col-sm-3 mb-3 d-flex">
                         <div class="card1 shadow position-relative">
                             <img src="@dish.Image" alt="Фото блюда" style="height: 150px;">
-                            <div class="card-body text-start">
+                            <div class="card-body text-start text-wrap text-break">
                                 <p class="card-text">@dish.Name</p>
                                 <p class="card-text">Описание: <em class="not-bold text-break">@dish.Description</em></p>
                                 <p class="card-text">@dish.Price сом</p>
                                 <div class="d-flex justify-content-end position-absolute bottom-0 end-0 m-2" style="width: 100%;">
-                                    <button class="btn btn-success btn-sm add-to-basket me-2"
-                                            data-dish-id="@dish.Id"
-                                            data-establishment-id="@Model.Id">
-                                        <i class="fa-solid fa-cart-plus"></i>
-                                    </button>
-
+                                    
+                                    @if (User.IsInRole("admin") || User.IsInRole("user"))
+                                    {
+                                        <button class="btn btn-success btn-sm add-to-basket me-2"
+                                                data-dish-id="@dish.Id"
+                                                data-establishment-id="@Model.Id">
+                                            <i class="fa-solid fa-cart-plus"></i>
+                                        </button>
+                                    } 
                                     @if (User .IsInRole("admin"))
                                     {
                                         <a asp-action="EditDish" asp-route-dishId="@dish.Id" class="btn btn-secondary btn-sm"><i class="fa-solid fa-pen-to-square"></i></a>
@@ -81,9 +84,9 @@
                         @foreach (var basketDish in Model.Basket.BasketDishes)
                         {
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div>
+                                <div class="dish-text">
                                     <strong>@basketDish.Dish.Name</strong> - @basketDish.Quantity x @basketDish.Dish.Price сом
-                                </div>
+                                </div> <br/>
                                 <button class="btn btn-danger btn-sm remove-from-basket"
                                         data-dish-id="@basketDish.DishId"
                                         data-establishment-id="@Model.Id">

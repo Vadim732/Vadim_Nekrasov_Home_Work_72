@@ -134,3 +134,11 @@ body {
 .cafe-image:hover {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
+
+.dish-text{
+  word-wrap: break-word;   
+  max-width: 200px;
+}
+
+
+

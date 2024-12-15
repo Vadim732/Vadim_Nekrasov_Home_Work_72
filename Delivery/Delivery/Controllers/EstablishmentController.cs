@@ -220,10 +220,13 @@ public class EstablishmentController : Controller
 
     [Authorize(Roles = "admin")]
     [HttpGet]
-    public async Task<IActionResult> EditDish(int dishId)
+    public async Task<IActionResult> EditDish(int? dishId)
     {
-        Dish dish = await _context.Dishes.FindAsync(dishId);
-
+        Dish? dish = await _context.Dishes.FindAsync(dishId);
+        if (dish == null)
+        {
+            return NotFound();
+        }
         return View(dish);
     }
 
@@ -233,23 +236,24 @@ public class EstablishmentController : Controller
     {
         if (ModelState.IsValid)
         {
-            Dish dish = await _context.Dishes.FindAsync(dishId);
-            dish.Name = model.Name;
-            dish.Description = model.Description;
-            dish.Image = model.Image;
-            dish.Price = model.Price;
-
-            await _context.SaveChangesAsync();
-            return RedirectToAction("EstablishmentDetailsPage", new { id = dish.EstablishmentId });
+            Dish? dish = await _context.Dishes.FindAsync(dishId);
+            if (dish != null)
+            {
+                dish.Name = model.Name;
+                dish.Description = model.Description;
+                dish.Image = model.Image;
+                dish.Price = model.Price;
+                await _context.SaveChangesAsync();
+                return RedirectToAction("EstablishmentDetailsPage", new { id = dish.EstablishmentId });
+            }
         }
-
         return View(model);
     }
 
     [Authorize(Roles = "admin")]
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteDish(int dishId)
+    public async Task<IActionResult> DeleteDish(int? dishId)
     {
         Dish? dish = await _context.Dishes.FindAsync(dishId);
         if (dish != null)
@@ -260,7 +264,6 @@ public class EstablishmentController : Controller
         
             return RedirectToAction("EstablishmentDetailsPage", new { id = establishmentId });
         }
-        
         return NotFound();
     }
     
