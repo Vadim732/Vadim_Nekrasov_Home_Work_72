@@ -102,20 +102,25 @@
     </div>
 </div>
 
-@section Scripts {
-    
+@section Scripts 
+{
     <script>
         $(document).ready(function () {
             $('.add-to-basket').click(function () {
                 var dishId = $(this).data('dish-id');
                 var establishmentId = $(this).data('establishment-id');
 
+                console.log("Adding to basket: ", { dishId, establishmentId });
                 $.ajax({
                     type: 'POST',
                     url: "/Establishment/AddToBasket/",
                     data: { dishId: dishId, establishmentId: establishmentId },
                     success: function (response) {
-                        updateBasket(response);
+                        console.log("Response from AddToBasket:", response);
+                        location.reload(); 
+                    },
+                    error: function (err) {
+                        console.log("Error adding to basket:", err);
                         
                     }
                 });
@@ -124,38 +129,20 @@
                 var dishId = $(this).data('dish-id');
                 var establishmentId = $(this).data('establishment-id');
 
+                console.log("Removing from basket: ", { dishId, establishmentId });
                 $.ajax({
                     type: 'POST',
                     url: '/Establishment/RemoveFromBasket/',
                     data: { dishId: dishId, establishmentId: establishmentId },
                     success: function (response) {
-                        updateBasket(response);
+                        console.log("Response from RemoveFromBasket:", response);
+                        location.reload();
                     },
-                    error: function () {
-                        alert('Ошибка при удалении товара из корзины');
+                    error: function (err) {
+                        console.log("Error removing from basket:", err);
                     }
                 });
             });
-            function updateBasket(response) {
-                var basketContainer = $('#basketContainer');
-                var basketHtml = '<h3 class="mb-3 text-center">Ваша корзина</h3>';
-
-                if (response.success && response.BasketDishes.length > 0) {
-                    basketHtml += '<ul class="list-group">';
-                    response.BasketDishes.forEach(function (item) {
-                        basketHtml += '<li class="list-group-item">';
-                        basketHtml += item.DishName + ' - ' + item.Quantity + ' x ' + item.Price + ' сом';
-                        basketHtml += '<button class="btn btn-danger btn-sm float-end remove-from-basket" data-dish-id="' + item.DishId + '" data-establishment-id="' + response.establishmentId + '">Удалить</button>';
-                        basketHtml += '</li>';
-                    });
-                    basketHtml += '</ul>';
-                    basketHtml += '<div class="mt-3"><strong>Общая стоимость:</strong> ' + response.TotalPrice + ' сом</div>';
-                } else {
-                    basketHtml += '<h4 class="text-center">Корзина пуста</h4>';
-                }
-
-                basketContainer.html(basketHtml);
-            }
         });
     </script>
 }
