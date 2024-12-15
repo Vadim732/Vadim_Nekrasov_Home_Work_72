@@ -272,9 +272,15 @@ public class EstablishmentController : Controller
         {
             return Json(new { success = false, message = "User not authorized" });
         }
+        var dish = await _context.Dishes.FirstOrDefaultAsync(d => d.Id == dishId);
+        if (dish == null)
+        {
+            return Json(new { success = false, message = "Dish not found" });
+        }
 
         var basket = await _context.Baskets
-            .Include(b => b.BasketDishes).ThenInclude(basketDish => basketDish.Dish)
+            .Include(b => b.BasketDishes)
+            .ThenInclude(basketDish => basketDish.Dish)
             .FirstOrDefaultAsync(b => b.UserId == user.Id && b.EstablishmentId == establishmentId);
 
         if (basket == null)
@@ -282,7 +288,8 @@ public class EstablishmentController : Controller
             basket = new Basket
             {
                 UserId = user.Id,
-                EstablishmentId = establishmentId
+                EstablishmentId = establishmentId,
+                BasketDishes = new List<BasketDish>()
             };
             _context.Baskets.Add(basket);
             await _context.SaveChangesAsync();
@@ -305,15 +312,19 @@ public class EstablishmentController : Controller
         var basketResponse = new
         {
             success = true,
-            BasketDishes = basket.BasketDishes.Select(bd => new
-            {
-                DishName = bd.Dish.Name,
-                Quantity = bd.Quantity,
-                Price = bd.Dish.Price,
-                TotalPrice = bd.Quantity * bd.Dish.Price,
-                DishId = bd.DishId
-            }).ToList(),
-            TotalPrice = basket.BasketDishes.Sum(bd => bd.Quantity * bd.Dish.Price)
+            BasketDishes = basket.BasketDishes
+                .Where(bd => bd.Dish != null)
+                .Select(bd => new
+                {
+                    DishName = bd.Dish.Name,
+                    Quantity = bd.Quantity,
+                    Price = bd.Dish.Price,
+                    TotalPrice = bd.Quantity * bd.Dish.Price,
+                    DishId = bd.DishId
+                }).ToList(),
+            TotalPrice = basket.BasketDishes
+                .Where(bd => bd.Dish != null)
+                .Sum(bd => bd.Quantity * bd.Dish.Price)
         };
 
         return Json(basketResponse);
