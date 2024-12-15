@@ -270,7 +270,7 @@ public class EstablishmentController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
-            return Unauthorized();
+            return Json(new { success = false, message = "User not authorized" });
         }
 
         var basket = await _context.Baskets
@@ -304,6 +304,7 @@ public class EstablishmentController : Controller
         await _context.SaveChangesAsync();
         var basketResponse = new
         {
+            success = true,
             BasketDishes = basket.BasketDishes.Select(bd => new
             {
                 DishName = bd.Dish.Name,
@@ -323,7 +324,7 @@ public class EstablishmentController : Controller
         var user = await _userManager.GetUserAsync(User);
         if (user == null)
         {
-            return Unauthorized();
+            return Json(new { success = false, message = "User not authorized" });
         }
 
         var basket = await _context.Baskets
@@ -335,12 +336,21 @@ public class EstablishmentController : Controller
             var dishInBasket = basket.BasketDishes.FirstOrDefault(bd => bd.DishId == dishId);
             if (dishInBasket != null)
             {
-                basket.BasketDishes.Remove(dishInBasket);
+                if (dishInBasket.Quantity > 1)
+                {
+                    dishInBasket.Quantity--;
+                }
+                else
+                {
+                    basket.BasketDishes.Remove(dishInBasket);
+                }
                 await _context.SaveChangesAsync();
             }
         }
+
         var basketResponse = new
         {
+            success = true,
             BasketDishes = basket.BasketDishes.Select(bd => new
             {
                 DishName = bd.Dish.Name,
@@ -354,5 +364,4 @@ public class EstablishmentController : Controller
 
         return Json(basketResponse);
     }
-
 }
