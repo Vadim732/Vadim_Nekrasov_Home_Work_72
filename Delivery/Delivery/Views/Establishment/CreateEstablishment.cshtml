@@ -1,44 +1,36 @@
-@using Microsoft.AspNetCore.Mvc.TagHelpers
 @model Delivery.ViewModels.EstablishmentViewModel
 
 @{
-ViewData["Title"] = "Создание заведения";
+    ViewData["Title"] = "Создание заведения";
 }
 
-<h2 class="mb-2 fw-bolder text-center">Добавить новое заведение</h2>
-
-<div class="container" style="max-width: 800px; margin: auto; padding: 10px;">
+<div class="bg-dark text-center pt-5 pb-4 border-radius-1">
+    <h3 class="text-white mb-5"><i class="fa-solid fa-building text-success"></i> Заполните форму для добавления нового заведения</h3>
     <form method="post" asp-action="CreateEstablishment" asp-controller="Establishment" asp-anti-forgery="true">
         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-        <div class="form-card">
-            <div class="form-card-item mb-4">
-                <label class="pb-2" asp-for="Name">Название заведения</label>
-                <input class="form-input form-control" type="text" asp-for="Name" placeholder="Введите название заведения"/>
+        <div class="form_row mb-3">
+            <label for="" class="col-4">
+                <input type="text" class="form-control" asp-for="Name" placeholder="Укажите название заведения...">
                 <span asp-validation-for="Name" class="text-danger"></span>
-            </div>
-
-            <div class="form-card-item mb-4">
-                <label class="pb-2" asp-for="Image">URL изображения</label>
-                <input class="form-input form-control" type="url" asp-for="Image" placeholder="Введите URL изображения"/>
-                <span asp-validation-for="Image" class="text-danger"></span>
-            </div>
-
-            <div class="form-card-item mb-4">
-                <label class="pb-2" asp-for="Description">Описание заведения</label>
-                <textarea class="form-input form-control" asp-for="Description" rows="6" placeholder="Введите описание заведения"></textarea>
-                <span asp-validation-for="Description" class="text-danger"></span>
-            </div>
-
-            <div class="text-center">
-                <input type="submit" value="Сохранить" class="btn btn-success" style="border-radius: 10px; padding: 10px 15px;"/>
-            </div>
+            </label>
         </div>
+        <div class="form_row mb-3">
+            <label for="" class="col-4">
+                <textarea type="text" class="form-control" asp-for="Description" rows="3" placeholder="Укажите описание заведения..."></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </label>
+        </div>
+        <div class="form_row mb-3">
+            <label for="" class="col-4">
+                <input type="url" class="form-control" asp-for="Image" placeholder="Укажите URL изображения...">
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </label>
+        </div>
+        <button type="submit" class="btn btn-outline-light mb-3 w-25">Сохранить</button>
     </form>
 </div>
 
 @section Scripts
 {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
+    @{ await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
