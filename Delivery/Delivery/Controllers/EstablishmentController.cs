@@ -265,7 +265,7 @@ public class EstablishmentController : Controller
         }
         return NotFound();
     }
-    
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> AddToBasket(int dishId, int establishmentId)
     {
@@ -331,6 +331,7 @@ public class EstablishmentController : Controller
 
         return Json(basketResponse);
     }
+    [Authorize]
     [HttpPost]
     public async Task<IActionResult> RemoveFromBasket(int dishId, int establishmentId)
     {
