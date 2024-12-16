@@ -17,5 +17,10 @@ public class DeliveryContext : IdentityDbContext<User, IdentityRole<int>, int>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+        modelBuilder.Entity<Dish>()
+            .HasOne(d => d.Establishments)
+            .WithMany(e => e.Dishes)
+            .HasForeignKey(d => d.EstablishmentId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }
