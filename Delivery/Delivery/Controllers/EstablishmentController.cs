@@ -85,8 +85,7 @@ public class EstablishmentController : Controller
             {
                 Name = model.Name,
                 Image = model.Image,
-                Description = model.Description,
-                UserId = user.Id,
+                Description = model.Description
             };
 
             _context.Establishments.Add(establishment);
