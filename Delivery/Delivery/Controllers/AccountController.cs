@@ -127,15 +127,28 @@ public class AccountController : Controller
 
         return View(model);
     }
-    
+
     [HttpGet]
-    [Authorize (Roles = "admin")]
-    public IActionResult Index()
+    [Authorize(Roles = "admin")]
+    public async Task<IActionResult> Index()
     {
-        List<User> users = _userManager.Users.ToList();
-        return View(users);
+        var users = await _userManager.Users.ToListAsync();
+        var userRoles = new List<UserRolesViewModel>();
+        foreach (var user in users)
+        {
+            var roles = await _userManager.GetRolesAsync(user);
+            userRoles.Add(new UserRolesViewModel
+            {
+                UserId = user.Id,
+                UserName = user.UserName,
+                Avatar = user.Avatar,
+                Roles = roles
+            });
+        }
+
+        return View(userRoles);
     }
-    
+
     [HttpGet]
     [Authorize]
     public async Task<IActionResult> Edit()
